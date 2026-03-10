@@ -13,9 +13,9 @@ Tyylittely: Tailwind CSS,
 Backend: Metropolia REST API
 
 ## Kuvat
-Etusivu: [../public/screenshots/main.png]
-Profiilinäkymä: [../public/screenshots/profile]
-Muokkaustila: [../public/screenshots/upload.png]
+![Etusivu](public/screenshots/main.png)
+![Profiili](public/screenshots/profile.png)
+![Muokkaus](public/screenshots/upload.png) |
 
 ## Käyttöönotto
 1. Asenna riippuvuudet: npm install
