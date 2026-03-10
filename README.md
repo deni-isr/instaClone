@@ -6,7 +6,7 @@ muokata omien julkaisujensa otsikoita ja kuvauksia sekä poistaa niitä.
 ## Tekniikat
 Front-end: React, TypeScript, Vite 
 Tilanhallinta: Zustand 
-Tyylittely: Tailwind CSS,
+Tyylittely: Tailwind CSS, lucide-react
 Backend: Metropolia REST API
 
 ## Kuvat
