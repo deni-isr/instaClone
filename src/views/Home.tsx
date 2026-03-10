@@ -1,46 +1,55 @@
-import { useEffect, useState } from 'react';
-import { useApi } from '../hooks/ApiHooks';
-import { VisualMedia } from '../types/VisualMedia';
+// src/views/Home.tsx
+import { useEffect, useState, useCallback } from 'react';
+import { useMedia } from '../hooks/ApiHooks';
 import MediaRow from '../components/MediaRow';
+import { VisualMedia } from '../types/VisualMedia';
+import useUserStore from '../store/UserStore';
 
-/**
- * Kotisivu, joka hakee ja näyttää kaikki julkaisut.
- * Käytämme useEffect-koukkua tietojen hakuun sivun latautuessa.
- * Julkaisut näytetään listana MediaRow-komponenttien avulla.
- */
+
 const Home = () => {
-  const { getMedia } = useApi();
+  const { getMedia } = useMedia();
+  const user = useUserStore((state) => state.user);
   const [mediaArray, setMediaArray] = useState<VisualMedia[]>([]);
 
-  {mediaArray.map((item) => (
-  // Lisää TÄMÄ key-prop MediaRow-komponenttiin
-  <MediaRow key={item.file_id} item={item} />
-  ))}
+  const fetchMedia = useCallback(async () => {
+    try {
+      const allMedia = await getMedia();
+      
+      const sortedMedia = allMedia.sort((a, b) => {
+        const idA = a.media_id || a.file_id || 0;
+        const idB = b.media_id || b.file_id || 0;
+        return idB - idA;
+      });
+      
+      if (user) {
+        // Pakotetaan tunnisteet numeroiksi tarkan vertailun takaamiseksi
+        const currentUserId = Number(user.user_id);
+        
+        const myMedia = sortedMedia.filter(item => Number(item.user_id) === currentUserId);
+        const othersMedia = sortedMedia.filter(item => Number(item.user_id) !== currentUserId).slice(0, 5);
+        
+        setMediaArray([...myMedia, ...othersMedia]);
+      } else {
+        setMediaArray(sortedMedia.slice(0, 5));
+      }
+    } catch (error) {
+      console.error('Kriittinen virhe mediatiedostojen noutamisessa:', error);
+    }
+  }, [getMedia, user]);
 
   useEffect(() => {
-    // Tehdään kutsu palvelimelle heti kun sivu avataan
-    const fetchMedia = async () => {
-      try {
-        const data = await getMedia();
-        setMediaArray(data);
-      } catch (error) {
-        console.error('Virhe median hakemisessa:', error);
-      }
-    };
-
     fetchMedia();
-  }, [getMedia]);
+  }, [fetchMedia]);
 
   return (
-    <div className="max-w-md mx-auto">
-      {mediaArray.length > 0 ? (
-        mediaArray.map((item) => (
-          <MediaRow key={item.file_id} item={item} />
-        ))
+    <div className="flex flex-col pb-20">
+      {mediaArray.length === 0 ? (
+        <p className="text-center text-gray-500 mt-10 text-sm">Ladataan julkaisuja...</p>
       ) : (
-        <div className="text-center p-10 text-gray-400">
-          Ladataan kuvia...
-        </div>
+        mediaArray.map((item) => {
+          const mId = item.media_id || item.file_id;
+          return mId ? <MediaRow key={mId} item={item} onDelete={fetchMedia} /> : null;
+        })
       )}
     </div>
   );

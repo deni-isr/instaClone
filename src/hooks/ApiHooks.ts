@@ -1,96 +1,184 @@
-import { AUTH_API, MEDIA_API, UPLOAD_API } from '../utils/constants';
-import { VisualMedia, LoginResponse } from '../types/VisualMedia';
+// src/hooks/ApiHooks.ts
+import { useCallback } from 'react';
+import { fetchData } from '../utils/fetch-data';
+import { VisualMedia } from '../types/VisualMedia';
 
-const useApi = () => {
-  const doFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
-    const response = await fetch(url, options);
-    const json = await response.json();
-    if (!response.ok) {
-      throw new Error(json.message || 'Virhe pyynnössä');
-    }
-    return json;
+// Haetaan rajapintojen osoitteet ympäristömuuttujista opettajan (Matti P.) standardin mukaisesti.
+const MEDIA_API = import.meta.env.VITE_MEDIA_API || 'https://media2.edu.metropolia.fi/media-api/api/v1';
+const AUTH_API = import.meta.env.VITE_AUTH_API || 'https://media2.edu.metropolia.fi/auth-api/api/v1';
+const UPLOAD_API = import.meta.env.VITE_UPLOAD_API || 'https://media2.edu.metropolia.fi/upload-api/api/v1';
+
+/**
+ * Käyttäjän todennukseen ja istunnon luomiseen liittyvät API-kutsut.
+ */
+export const useAuthentication = () => {
+  const postLogin = async (inputs: object) => {
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(inputs),
+    };
+    return await fetchData<any>(`${AUTH_API}/auth/login`, fetchOptions);
+  };
+
+  return { postLogin };
+};
+
+/**
+ * Käyttäjätilien hallintaan ja rekisteröitymiseen liittyvät API-kutsut.
+ */
+export const useUser = () => {
+  const resourceUrl = `${AUTH_API}/users`;
+
+  const postRegister = async (inputs: object) => {
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(inputs),
+    };
+    return await fetchData<any>(resourceUrl, fetchOptions);
+  };
+
+  const getUserByToken = useCallback(async (token: string) => {
+    const options = {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    return fetchData<any>(`${resourceUrl}/token`, options);
+  }, [resourceUrl]);
+
+  const deleteUser = async (token: string) => {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    return fetchData<any>(resourceUrl, options);
+  };
+
+  return { postRegister, getUserByToken, deleteUser };
+};
+
+/**
+ * Mediatiedostojen (julkaisujen) hallintaan liittyvät API-kutsut.
+ * Sisältää syötteen lataamisen, omien julkaisujen poistamisen sekä
+ * metatietojen tallentamisen tietokantaan.
+ */
+export const useMedia = () => {
+  const getMedia = async () => {
+    return fetchData<VisualMedia[]>(`${MEDIA_API}/media`);
+  };
+
+  const deleteMedia = async (media_id: number, token: string) => {
+    const fetchOptions = {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    return fetchData<any>(`${MEDIA_API}/media/${media_id}`, fetchOptions);
   };
 
   /**
- * Funktio tiedoston ja sen tietojen lähettämiseen palvelimelle.
- * Vaatii Bearer-tokenin x-access-token -otsikossa.
- */
-const postMedia = async (formData: FormData, token: string) => {
-  const options: RequestInit = {
-    method: 'POST',
-    headers: {
-      'x-access-token': token,
-    },
-    body: formData, // FormData sisältää tiedoston ja muut kentät (title, description)
-  };
-  return await doFetch<any>(UPLOAD_API + '/upload', options);
-};
-
-  // Haetaan kuvat MEDIA_API:sta
-  const getMedia = async (): Promise<VisualMedia[]> => {
-    return await doFetch<VisualMedia[]>(MEDIA_API + '/media');
-  };
-
-  // Kirjautuminen AUTH_API:n kautta
-  const postLogin = async (credentials: object): Promise<LoginResponse> => {
-    const options: RequestInit = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
+   * Kaksivaiheisen latausprosessin toinen vaihe:
+   * Yhdistää Upload-rajapinnan palauttamat tiedostotiedot käyttäjän syöttämiin 
+   * metatietoihin ja tallentaa lopullisen julkaisun tietokantaan.
+   */
+  const postMedia = async (fileData: any, inputs: object, token: string) => {
+    const mediaData = {
+      ...fileData,
+      ...inputs,
     };
-    return await doFetch<LoginResponse>(AUTH_API + '/auth/login', options);
+
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(mediaData),
+    };
+    return fetchData<any>(`${MEDIA_API}/media`, fetchOptions);
   };
 
-  // Lisää tämä useApi-funktion sisälle:
-const postUser = async (user: object) => {
-  const options: RequestInit = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user),
+  return { getMedia, deleteMedia, postMedia };
+};
+
+/**
+ * Fyysisten tiedostojen (kuvat/videot) siirtämiseen (Upload) liittyvät API-kutsut.
+ */
+export const useFile = () => {
+  const postFile = async (file: File, token: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Huomio: FormData-oliota käytettäessä selain asettaa Content-Type -otsikon ja
+    // boundary-arvon automaattisesti. Sitä ei saa asettaa manuaalisesti tässä.
+    const options = {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+      body: formData,
+    };
+    return fetchData<any>(`${UPLOAD_API}/upload`, options);
   };
-  return await doFetch(AUTH_API + '/users', options);
+
+  return { postFile };
 };
 
-// Lisää tämä useApi-funktion sisälle
-const getUserByToken = async (token: string) => {
-  const options: RequestInit = {
-    headers: { 'x-access-token': token },
+/**
+ * Tykkäyksiin (Likes) ja vuorovaikutukseen liittyvät API-kutsut.
+ */
+export const useLike = () => {
+  const postLike = async (media_id: number, token: string) => {
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({ media_id }),
+    };
+    return fetchData<any>(`${MEDIA_API}/likes`, fetchOptions);
   };
-  return await doFetch<LoginResponse>(AUTH_API + '/users/token', options);
-};
 
-const getLikesByMediaId = async (mediaId: number) => {
-  // Varmistetaan, että ID on olemassa ja se on numero ennen kutsua
-  if (!mediaId) throw new Error('media_id is missing');
-  
-  return await doFetch<any[]>(`${MEDIA_API}/likes/bymedia/${mediaId}`);
-};
-
-// Tykkäyksen lisääminen
-const postLike = async (fileId: number, token: string) => {
-  const options: RequestInit = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token': token,
-    },
-    // KOKEILE: Jos media_id ei toimi, kokeile file_id: Number(fileId)
-    body: JSON.stringify({ media_id: Number(fileId) }),
+  const deleteLike = async (like_id: number, token: string) => {
+    const fetchOptions = {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    return fetchData<any>(`${MEDIA_API}/likes/${like_id}`, fetchOptions);
   };
-  return await doFetch<any>(MEDIA_API + '/likes', options);
-};
 
-// Poistetaan tykkäys (jos käyttäjä painaa uudelleen)
-const deleteLike = async (likeId: number, token: string) => {
-  const options: RequestInit = {
-    method: 'DELETE',
-    headers: { 'x-access-token': token },
+  const getCountByMediaId = async (media_id: number) => {
+    return fetchData<{ count: number }>(`${MEDIA_API}/likes/count/${media_id}`);
   };
-  return await doFetch<any>(MEDIA_API + '/likes/' + likeId, options);
-};
 
-// Päivitä return-lauseke:
-return { getMedia, postLogin, postUser, getUserByToken, postMedia, getLikesByMediaId, postLike, deleteLike };
-};
+  const getUserLike = async (media_id: number, token: string) => {
+    const fetchOptions = {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+    };
+    try {
+      return await fetchData<any>(`${MEDIA_API}/likes/bymedia/user/${media_id}`, fetchOptions);
+    } catch (e) {
+      // Mikäli käyttäjä ei ole vielä tykännyt julkaisusta, rajapinta saattaa
+      // palauttaa virheen. Palautetaan neutraali null virhetilan sijaan.
+      return null; 
+    }
+  };
 
-export { useApi };
+  return { postLike, deleteLike, getCountByMediaId, getUserLike };
+};

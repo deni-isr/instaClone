@@ -1,17 +1,13 @@
-/**
- * Määritellään mediaobjektin tyyppi.
- * Tämä auttaa TypeScriptiä ymmärtämään, mitä tietoja kuvasta on saatavilla.
- */
 export interface VisualMedia {
-  file_id: number;
-  user_id: number;
+  file_id?: number;
+  media_id?: number;
+  user_id: number | string;
   filename: string;
-  filesize: number;
   title: string;
-  description: string;
-  media_type: string;
-  mime_type: string;
-  time_added: string;
+  description?: string;
+  media_type?: string;
+  filesize?: number;
+  created_at?: string;
 }
 
 export interface LoginResponse {
