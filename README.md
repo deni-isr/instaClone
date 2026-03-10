@@ -25,6 +25,8 @@ https://media2.edu.metropolia.fi/media-api/api/v1
 ## API-dokumentaatioon:
 [https://media2.edu.metropolia.fi/media-api/](https://media2.edu.metropolia.fi/media-api/)
 
+## Testikäyttäjä
+Nimi: random  Pass: random123
 
 ## Tekoäly
 Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
