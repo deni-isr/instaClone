@@ -19,10 +19,6 @@ const useUserStore = create<UserState>((set) => ({
   token: null,
   setUser: (user) => set({ user }),
   setToken: (token) => set({ token }),
-  /**
-   * Uloskirjautumisfunktio: Tyhjentää globaalin tilan ja poistaa 
-   * paikalliseen välimuistiin (localStorage) tallennetun valtuutustunnisteen.
-   */
   logout: () => {
     localStorage.removeItem('token');
     set({ user: null, token: null });

@@ -1,16 +1,13 @@
-// src/hooks/ApiHooks.ts
 import { useCallback } from 'react';
 import { fetchData } from '../utils/fetch-data';
 import { VisualMedia } from '../types/VisualMedia';
 
-// Haetaan rajapintojen osoitteet ympäristömuuttujista opettajan (Matti P.) standardin mukaisesti.
+// Haetaan rajapintojen osoitteet ympäristömuuttujista opettajan standardin mukaisesti.
 const MEDIA_API = import.meta.env.VITE_MEDIA_API || 'https://media2.edu.metropolia.fi/media-api/api/v1';
 const AUTH_API = import.meta.env.VITE_AUTH_API || 'https://media2.edu.metropolia.fi/auth-api/api/v1';
 const UPLOAD_API = import.meta.env.VITE_UPLOAD_API || 'https://media2.edu.metropolia.fi/upload-api/api/v1';
 
-/**
- * Käyttäjän todennukseen ja istunnon luomiseen liittyvät API-kutsut.
- */
+// Käyttäjän todennukseen ja istunnon luomiseen liittyvät API-kutsut.
 export const useAuthentication = () => {
   const postLogin = async (inputs: object) => {
     const fetchOptions = {
@@ -26,9 +23,8 @@ export const useAuthentication = () => {
   return { postLogin };
 };
 
-/**
- * Käyttäjätilien hallintaan ja rekisteröitymiseen liittyvät API-kutsut.
- */
+
+// Käyttäjätilien hallintaan ja rekisteröitymiseen liittyvät API-kutsut.
 export const useUser = () => {
   const resourceUrl = `${AUTH_API}/users`;
 
@@ -66,11 +62,7 @@ export const useUser = () => {
   return { postRegister, getUserByToken, deleteUser };
 };
 
-/**
- * Mediatiedostojen (julkaisujen) hallintaan liittyvät API-kutsut.
- * Sisältää syötteen lataamisen, omien julkaisujen poistamisen sekä
- * metatietojen tallentamisen tietokantaan.
- */
+// Media-julkaisuihin liittyvät API-kutsut
 export const useMedia = () => {
   const getMedia = async () => {
     return fetchData<VisualMedia[]>(`${MEDIA_API}/media`);
@@ -86,11 +78,20 @@ export const useMedia = () => {
     return fetchData<any>(`${MEDIA_API}/media/${media_id}`, fetchOptions);
   };
 
-  /**
-   * Kaksivaiheisen latausprosessin toinen vaihe:
-   * Yhdistää Upload-rajapinnan palauttamat tiedostotiedot käyttäjän syöttämiin 
-   * metatietoihin ja tallentaa lopullisen julkaisun tietokantaan.
-   */
+  // Päivittää olemassa olevan julkaisun tietoja (esim. otsikko, kuvaus) ilman tiedoston uudelleenlähetystä
+  const putMedia = async (media_id: number, inputs: object, token: string) => {
+    const fetchOptions = {
+      method: 'PUT',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(inputs),
+    };
+    return fetchData<any>(`${MEDIA_API}/media/${media_id}`, fetchOptions);
+  };
+
+  // Luo uuden julkaisun (Create) yhdistää tiedoston metatietoihin
   const postMedia = async (fileData: any, inputs: object, token: string) => {
     const mediaData = {
       ...fileData,
@@ -108,19 +109,15 @@ export const useMedia = () => {
     return fetchData<any>(`${MEDIA_API}/media`, fetchOptions);
   };
 
-  return { getMedia, deleteMedia, postMedia };
+  return { getMedia, deleteMedia, postMedia, putMedia };
 };
 
-/**
- * Fyysisten tiedostojen (kuvat/videot) siirtämiseen (Upload) liittyvät API-kutsut.
- */
+// Tiedostojen lataukseen liittyvät API-kutsut
 export const useFile = () => {
   const postFile = async (file: File, token: string) => {
     const formData = new FormData();
     formData.append('file', file);
     
-    // Huomio: FormData-oliota käytettäessä selain asettaa Content-Type -otsikon ja
-    // boundary-arvon automaattisesti. Sitä ei saa asettaa manuaalisesti tässä.
     const options = {
       method: 'POST',
       headers: {
@@ -134,9 +131,7 @@ export const useFile = () => {
   return { postFile };
 };
 
-/**
- * Tykkäyksiin (Likes) ja vuorovaikutukseen liittyvät API-kutsut.
- */
+// Tykkäyksiin (Likes) liittyvät API-kutsut
 export const useLike = () => {
   const postLike = async (media_id: number, token: string) => {
     const fetchOptions = {
@@ -174,11 +169,30 @@ export const useLike = () => {
     try {
       return await fetchData<any>(`${MEDIA_API}/likes/bymedia/user/${media_id}`, fetchOptions);
     } catch (e) {
-      // Mikäli käyttäjä ei ole vielä tykännyt julkaisusta, rajapinta saattaa
-      // palauttaa virheen. Palautetaan neutraali null virhetilan sijaan.
       return null; 
     }
   };
 
   return { postLike, deleteLike, getCountByMediaId, getUserLike };
+};
+
+// Kommentteihin liittyvät API-kutsut
+export const useComment = () => {
+  const postComment = async (comment_text: string, media_id: number, token: string) => {
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token, 
+      },
+      body: JSON.stringify({ media_id, comment_text }),
+    };
+    return await fetchData<any>(`${MEDIA_API}/comments`, fetchOptions);
+  };
+
+  const getCommentsByMediaId = async (media_id: number) => {
+    return await fetchData<any[]>(`${MEDIA_API}/comments/bymedia/${media_id}`);
+  };
+
+  return { postComment, getCommentsByMediaId };
 };

@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router';
 import { Home, User, PlusSquare } from 'lucide-react';
 import useUserStore from '../store/UserStore';
 
@@ -7,7 +7,6 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans text-black">
-      {/* iOS-tyylinen yläpalkki */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 px-4 py-3 flex justify-center">
         <h1 className="text-lg font-bold tracking-tight">InstaClone</h1>
       </header>
@@ -16,8 +15,7 @@ const Layout = () => {
       <main className="max-w-md mx-auto">
         <Outlet />
       </main>
-
-      {/* Alavalikko (Bottom Navigation) */}
+      
       <nav className="bg-white/90 backdrop-blur-md border-t border-gray-200 fixed bottom-0 w-full flex justify-around p-3 pb-8">
         <Link to="/" className="text-gray-400 hover:text-black transition-colors">
           <Home size={28} strokeWidth={1.5} />

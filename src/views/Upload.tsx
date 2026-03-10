@@ -1,16 +1,9 @@
-// src/views/Upload.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFile, useMedia } from '../hooks/ApiHooks';
 import useUserStore from '../store/UserStore';
 import { Camera } from 'lucide-react';
 
-/**
- * Julkaisun luontinäkymä.
- * Toteuttaa opettajan vaatiman kaksivaiheisen latausprosessin:
- * 1. Tiedoston siirto Upload-mikropalvelimelle.
- * 2. Metatietojen (otsikko, kuvaus ja tiedostonimi) tallennus Media-mikropalvelimelle.
- */
 const Upload = () => {
   const { postFile } = useFile();
   const { postMedia } = useMedia();
@@ -33,16 +26,12 @@ const Upload = () => {
     }
   };
 
-  /**
-   * Päivittää lomakkeen tekstisyötteiden tilaa dynaamisesti.
-   */
+  // Päivittää lomakkeen tekstisyötteiden tilaa dynaamisesti.
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setInputs((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-  /**
-   * Suorittaa asynkronisen, kaksivaiheisen latausprosessin.
-   */
+  // Suorittaa asynkronisen, kaksivaiheisen latausprosessin.
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!file || !token) return;
@@ -50,23 +39,23 @@ const Upload = () => {
     try {
       setLoading(true);
 
-      // Vaihe 1: Ladataan fyysinen tiedosto palvelimelle
+      //Ladataan fyysinen tiedosto palvelimelle
       const fileResponse = await postFile(file, token);
       
-      // Varmistetaan, että palvelin palautti tiedoston tiedot (data-objekti)
+      // Varmistetaan, että palvelin palautti tiedoston tiedot
       if (!fileResponse || !fileResponse.data) {
         throw new Error('Tiedoston lataus onnistui, mutta metatietoja ei palautettu.');
       }
 
-      // Vaihe 2: Lähetetään tiedot tietokantaan (yhdistetään lomaketiedot ja tiedoston tiedot)
+      //Lähetetään tiedot tietokantaan
       await postMedia(fileResponse.data, inputs, token);
 
-      alert('Julkaisu jaettu onnistuneesti!');
+      alert('Kuva on julkaistu');
       // Ohjataan käyttäjä takaisin etusivulle, mikä käynnistää syötteen päivityksen automaattisesti
       navigate('/'); 
     } catch (error) {
-      console.error('Latausprosessin virhe:', error);
-      alert('Julkaisun jakaminen epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen.');
+      console.error('virhe:', error);
+      alert('Yritä uudelleen');
     } finally {
       setLoading(false);
     }

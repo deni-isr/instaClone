@@ -1,25 +1,17 @@
-// src/components/MediaRow.tsx
 import { useEffect, useState, useCallback } from 'react';
-import { VisualMedia } from '../types/VisualMedia';
-import { Heart, Trash2 } from 'lucide-react';
-import { useLike, useMedia } from '../hooks/ApiHooks'; // Käytetään opettajan hookeja
+import { Heart, Trash2, Pencil, Check, X } from 'lucide-react';
+import { useLike, useMedia } from '../hooks/ApiHooks';
 import useUserStore from '../store/UserStore';
 import { MEDIA_BASE_URL } from '../utils/constants';
 
 interface MediaRowProps {
-  item: VisualMedia;
+  item: any;
   onDelete?: () => void;
 }
 
-/**
- * Yksittäisen mediaelementin komponentti.
- * Päivitetty opettajan standardin mukaiseksi: 
- * - Tykkäysten poisto (DELETE) toimii tallennetun like_id:n avulla.
- * - Tykkäysten kokonaismäärä haetaan erillisellä API-kutsulla.
- */
 const MediaRow = ({ item, onDelete }: MediaRowProps) => {
   const { postLike, deleteLike, getCountByMediaId, getUserLike } = useLike();
-  const { deleteMedia } = useMedia();
+  const { deleteMedia, putMedia } = useMedia();
   const token = useUserStore((state) => state.token);
   const user = useUserStore((state) => state.user);
 
@@ -27,32 +19,35 @@ const MediaRow = ({ item, onDelete }: MediaRowProps) => {
   const [userLiked, setUserLiked] = useState(false);
   const [userLikeId, setUserLikeId] = useState<number | null>(null);
 
+  // Muokkaustilan tila ja syötteet
+  const [isEditing, setIsEditing] = useState(false);
+  const [editInputs, setEditInputs] = useState({
+    title: item.title || '',
+    description: item.description || ''
+  });
+
   const mId = item.media_id || item.file_id;
   const imageUrl = item.filename.startsWith('http') ? item.filename : MEDIA_BASE_URL + item.filename;
+  const isOwnPost = user && Number(user.user_id) === Number(item.user_id);
 
-  /**
-   * Hakee tykkäysten ajantasaisen tilan palvelimelta
-   */
   const updateLikes = useCallback(async () => {
     if (!mId) return;
     try {
-      // Haetaan tykkäysten kokonaismäärä
       const countData = await getCountByMediaId(mId);
       setLikeCount(countData.count);
 
-      // Tarkistetaan, onko kirjautunut käyttäjä jo tykännyt tästä julkaisusta
       if (token) {
         const likeData = await getUserLike(mId, token);
         if (likeData && likeData.like_id) {
           setUserLiked(true);
-          setUserLikeId(likeData.like_id); // Otetaan like_id talteen poistoa varten
+          setUserLikeId(likeData.like_id);
         } else {
           setUserLiked(false);
           setUserLikeId(null);
         }
       }
     } catch (e) {
-      console.error('Tykkäystietojen päivitys epäonnistui:', e);
+      console.error('Tykkäysten päivitys epäonnistui');
     }
   }, [mId, token, getCountByMediaId, getUserLike]);
 
@@ -60,41 +55,44 @@ const MediaRow = ({ item, onDelete }: MediaRowProps) => {
     updateLikes();
   }, [updateLikes]);
 
-  /**
-   * Käsittelee tykkäyspainikkeen painalluksen (Toggle-toiminnallisuus).
-   */
   const handleLike = async () => {
     if (!token || !mId) return;
-
     try {
       if (userLiked && userLikeId) {
-        // Jos tykkäys on jo olemassa, poistetaan se
         await deleteLike(userLikeId, token);
       } else {
-        // Muussa tapauksessa lisätään uusi tykkäys
         await postLike(mId, token);
       }
-      // Päivitetään tila onnistuneen API-kutsun jälkeen
       await updateLikes();
     } catch (e) {
-      console.warn('Tykkäystapahtuman epäonnistui:', e);
+      console.warn('Tykkäys epäonnistui:', e);
     }
   };
 
   const handleDelete = async () => {
     if (!token || !mId) return;
-    const isConfirmed = window.confirm('Haluatko varmasti poistaa tämän julkaisun pysyvästi?');
+    const isConfirmed = window.confirm('Haluatko varmasti poistaa tämän julkaisun?');
     if (!isConfirmed) return;
 
     try {
       await deleteMedia(mId, token);
       if (onDelete) onDelete();
     } catch (error) {
-      console.error('Poisto epäonnistui:', error);
+      console.error('Julkaisun poisto epäonnistui:', error);
     }
   };
 
-  const isOwnPost = user && Number(user.user_id) === Number(item.user_id);
+  const handleSaveEdit = async () => {
+    if (!token || !mId) return;
+    try {
+      await putMedia(mId, editInputs, token);
+      setIsEditing(false);
+      if (onDelete) onDelete();
+    } catch (error) {
+      console.error('Päivitys epäonnistui:', error);
+      alert('Tietojen päivitys epäonnistui.');
+    }
+  };
 
   return (
     <div className="bg-white mb-6 border-b border-gray-100 pb-4">
@@ -105,10 +103,16 @@ const MediaRow = ({ item, onDelete }: MediaRowProps) => {
           </div>
           <span className="font-bold text-xs uppercase">Käyttäjä {item.user_id}</span>
         </div>
-        {isOwnPost && (
-          <button onClick={handleDelete} className="text-red-500 hover:text-red-700 p-1">
-            <Trash2 size={20} />
-          </button>
+        
+        {isOwnPost && !isEditing && (
+          <div className="flex space-x-2">
+            <button onClick={() => setIsEditing(true)} className="text-blue-500 hover:text-blue-700 p-1">
+              <Pencil size={18} />
+            </button>
+            <button onClick={handleDelete} className="text-red-500 hover:text-red-700 p-1">
+              <Trash2 size={18} />
+            </button>
+          </div>
         )}
       </div>
 
@@ -127,13 +131,38 @@ const MediaRow = ({ item, onDelete }: MediaRowProps) => {
           />
         </div>
         
-        <div className="px-1 w-full overflow-hidden">
-          <p className="text-sm font-bold mb-1 text-black">{likeCount} tykkäystä</p>
+        <p className="text-sm font-bold mb-2 text-black">{likeCount} tykkäystä</p>
+
+        {isEditing ? (
+          <div className="space-y-2 mt-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+            <input 
+              type="text" 
+              value={editInputs.title}
+              onChange={(e) => setEditInputs({...editInputs, title: e.target.value})}
+              className="w-full p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Otsikko"
+            />
+            <textarea 
+              value={editInputs.description}
+              onChange={(e) => setEditInputs({...editInputs, description: e.target.value})}
+              className="w-full p-2 text-sm border border-gray-300 rounded resize-none h-16 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Kuvaus"
+            />
+            <div className="flex space-x-2 pt-1">
+              <button onClick={handleSaveEdit} className="flex-1 bg-blue-500 text-white text-xs font-bold py-2 rounded flex items-center justify-center">
+                <Check size={14} className="mr-1" /> Tallenna
+              </button>
+              <button onClick={() => setIsEditing(false)} className="flex-1 bg-gray-200 text-black text-xs font-bold py-2 rounded flex items-center justify-center">
+                <X size={14} className="mr-1" /> Peruuta
+              </button>
+            </div>
+          </div>
+        ) : (
           <div className="text-sm text-gray-800 break-words whitespace-pre-wrap w-full">
             <span className="font-bold mr-2 text-black">{item.title}</span>
             <span>{item.description}</span>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

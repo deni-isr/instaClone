@@ -1,14 +1,9 @@
-// src/views/Login.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthentication, useUser } from '../hooks/ApiHooks'; // HUOM: Päivitetyt opettajan hookit
+import { useNavigate } from 'react-router';
+import { useAuthentication, useUser } from '../hooks/ApiHooks';
 import useUserStore from '../store/UserStore';
 
-/**
- * Kirjautumisnäkymä (Login).
- * Käsittelee käyttäjän todennuksen (autentikaatio) hyödyntäen uutta
- * modulaarista hook-arkkitehtuuria (useAuthentication).
- */
+
 const Login = () => {
   // Tuodaan tarvittavat funktiot ja tilanhallinta
   const { postLogin } = useAuthentication();
@@ -19,16 +14,10 @@ const Login = () => {
   const [inputs, setInputs] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
 
-  /**
-   * Päivittää lomakkeen tilan käyttäjän syötteen perusteella.
-   */
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-  /**
-   * Käsittelee kirjautumislomakkeen lähetyksen asynkronisesti.
-   */
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError('');
@@ -48,7 +37,7 @@ const Login = () => {
           setUser(userData.user);
         }
 
-        // 4. Ohjataan käyttäjä onnistuneen kirjautumisen jälkeen etusivulle
+        // Ohjataan käyttäjä onnistuneen kirjautumisen jälkeen etusivulle
         navigate('/');
       }
     } catch (e) {

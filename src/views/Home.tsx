@@ -1,10 +1,8 @@
-// src/views/Home.tsx
 import { useEffect, useState, useCallback } from 'react';
 import { useMedia } from '../hooks/ApiHooks';
 import MediaRow from '../components/MediaRow';
 import { VisualMedia } from '../types/VisualMedia';
 import useUserStore from '../store/UserStore';
-
 
 const Home = () => {
   const { getMedia } = useMedia();
@@ -14,7 +12,7 @@ const Home = () => {
   const fetchMedia = useCallback(async () => {
     try {
       const allMedia = await getMedia();
-      
+      // Järjestetään media uusimmasta vanhimpaan, jotta uudet julkaisut näkyvät ensin
       const sortedMedia = allMedia.sort((a, b) => {
         const idA = a.media_id || a.file_id || 0;
         const idB = b.media_id || b.file_id || 0;
@@ -33,7 +31,7 @@ const Home = () => {
         setMediaArray(sortedMedia.slice(0, 5));
       }
     } catch (error) {
-      console.error('Kriittinen virhe mediatiedostojen noutamisessa:', error);
+      console.error('virhe:', error);
     }
   }, [getMedia, user]);
 
@@ -44,7 +42,7 @@ const Home = () => {
   return (
     <div className="flex flex-col pb-20">
       {mediaArray.length === 0 ? (
-        <p className="text-center text-gray-500 mt-10 text-sm">Ladataan julkaisuja...</p>
+        <p className="text-center text-gray-500 mt-10 text-sm">Ladataan ...</p>
       ) : (
         mediaArray.map((item) => {
           const mId = item.media_id || item.file_id;

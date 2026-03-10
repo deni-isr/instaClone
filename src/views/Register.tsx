@@ -15,8 +15,8 @@ const Register: React.FC = () => {
     event.preventDefault();
     try {
       await postUser(inputs);
-      alert('Käyttäjä luotu! Voit nyt kirjautua sisään.');
-      navigate('/login'); // Ohjataan kirjautumiseen
+      alert('Käyttäjä luotu!');
+      navigate('/login');
     } catch (error) {
       alert((error as Error).message);
     }

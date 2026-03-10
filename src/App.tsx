@@ -1,5 +1,4 @@
-// src/App.tsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import { useEffect, useState } from 'react';
 import Layout from './views/Layout';
 import Home from './views/Home';
@@ -7,24 +6,16 @@ import Login from './views/Login';
 import Profile from './views/Profile';
 import Upload from './views/Upload';
 import useUserStore from './store/UserStore';
-import { useUser } from './hooks/ApiHooks'; // HUOM: Päivitetty käyttämään opettajan useUser-hookia
+import { useUser } from './hooks/ApiHooks';
 
-/**
- * Sovelluksen juurikomponentti.
- * Hallinnoi asiakaspuolen reititystä (React Router) ja vastaa käyttäjän 
- * istunnon (session) automaattisesta palauttamisesta sivun latautuessa.
- */
 const App = () => {
   // Noudetaan getUserByToken-funktio uudesta useUser-hookista
   const { getUserByToken } = useUser();
   const { setUser, setToken, logout } = useUserStore();
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
+  // Käytetään useEffectiä istunnon palauttamiseen sovelluksen käynnistyessä
   useEffect(() => {
-    /**
-     * Hakee selaimen paikallisesta välimuistista (localStorage) valtuutustunnisteen
-     * ja pyrkii palauttamaan käyttäjän istunnon taustajärjestelmästä.
-     */
     const restoreSession = async () => {
       const savedToken = localStorage.getItem('token');
       if (savedToken) {

@@ -1,7 +1,4 @@
-/**
- * Opettajan mallin mukainen yleiskäyttöinen apufunktio API-kutsujen suorittamiseen.
- * Käsittelee automaattisesti HTTP-virheet ja palauttaa datan halutussa tyypissä.
- */
+// Tämä tiedosto sisältää apufunktion datan hakemiseen API:sta, joka käsittelee virheitä ja palauttaa JSON-muodossa olevan datan.
 export const fetchData = async <T>(
   url: string,
   options: RequestInit = {}
