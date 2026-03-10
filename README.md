@@ -1,5 +1,3 @@
-# InstaClone Median jakosovellus
-
 ## Toiminnallisuudet
 Käyttäjänhallinta: Sisäänkirjautuminen ja tilin poistaminen
 Median hallinta: Julkaisujen selaus, omien postausten muokkaus
