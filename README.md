@@ -14,7 +14,7 @@ Backend: Metropolia REST API
 
 ## Kuvat
 Etusivu: ![Etusivu](public/screenshots/main.png)
-Profiili: ![Profiili](public/screenshots/profile.png)
+Profiili: ![Profiili](public/screenshots/profil.png)
 Muokkaustila: ![Muokkaus](public/screenshots/upload.png)
 
 ## Käyttöönotto
