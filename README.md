@@ -19,6 +19,11 @@ Muokkaustila: ![Muokkaus](public/screenshots/edit.png)
 2. Konfiguroi .env tiedosto API-osoitteilla
 3. Käynnistä sovelus: npm run dev
 
+## Tietokannan kuvaus
+**Users:** Käyttäjätiedot ja tunnistautuminen
+**Media:** Tiedostojen nimet, otsikot, kuvaukset ja omistajuussuhteet
+**Likes:** Julkaisujen ja käyttäjien välinen yhteys
+
 ## Back-end-API:
 https://media2.edu.metropolia.fi/media-api/api/v1
 
