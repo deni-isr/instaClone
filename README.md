@@ -1,5 +1,3 @@
-# InstaClone Median jakosovellus
-
 ## Toiminnallisuudet
 Käyttäjänhallinta: Sisäänkirjautuminen ja tilin poistaminen
 Median hallinta: Julkaisujen selaus, omien postausten muokkaus
@@ -13,14 +11,14 @@ Tyylittely: Tailwind CSS,
 Backend: Metropolia REST API
 
 ## Kuvat
-Etusivu: [../public/screenshots/main.png]
-Profiilinäkymä: [../public/screenshots/profile]
-Muokkaustila: [../public/screenshots/upload.png]
+Etusivu: ![Etusivu](public/screenshots/main.png)
+Profiili: ![Profiili](public/screenshots/profil.png)
+Muokkaustila: ![Muokkaus](public/screenshots/edit.png)
 
 ## Käyttöönotto
-1. Asenna riippuvuudet: npm install
-2. Konfiguroi .env tiedosto API-osoitteilla.
-3. Käynnistä kehityspalvelin: npm run dev
+1. Asenna: npm install
+2. Konfiguroi .env tiedosto API-osoitteilla
+3. Käynnistä sovelus: npm run dev
 
 ## Tekoäly
 Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
