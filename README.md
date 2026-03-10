@@ -1,7 +1,6 @@
 ## Toiminnallisuudet
-Käyttäjänhallinta: Sisäänkirjautuminen ja tilin poistaminen
-Median hallinta: Julkaisujen selaus, omien postausten muokkaus
-Vuorovaikutus: Tykkäysten lisääminen ja poistaminen lisääksi käyttäjä voi luoda uusia julkaisuja, 
+Käyttäjänhallinta: Sisäänkirjautuminen ja tilin poistaminen.
+Median hallinta: Julkaisujen selaus, omien postausten muokkaus, tykkäysten lisääminen ja poistaminen lisääksi käyttäjä voi luoda uusia julkaisuja, 
 muokata omien julkaisujensa otsikoita ja kuvauksia sekä poistaa niitä.
 
 ## Tekniikat
