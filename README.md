@@ -29,4 +29,4 @@ https://media2.edu.metropolia.fi/media-api/api/v1
 
 ## Tekoäly
 Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
-kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta.
+kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta ja sovelluksen ulkoasu.
