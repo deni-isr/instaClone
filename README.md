@@ -20,6 +20,13 @@ Muokkaustila: ![Muokkaus](public/screenshots/edit.png)
 2. Konfiguroi .env tiedosto API-osoitteilla
 3. Käynnistä sovelus: npm run dev
 
+##Back-end-API:
+https://media2.edu.metropolia.fi/media-api/api/v1
+
+##API-dokumentaatioon:
+[https://media2.edu.metropolia.fi/media-api/](https://media2.edu.metropolia.fi/media-api/)
+
+
 ## Tekoäly
 Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
 kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta.
