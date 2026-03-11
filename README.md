@@ -12,7 +12,9 @@ Backend: Metropolia REST API
 ## Kuvat
 Etusivu: ![Etusivu](public/screenshots/main.png)
 Profiili: ![Profiili](public/screenshots/profil.png)
+Upload: ![Upload](public/screenshots/upload.png)
 Muokkaustila: ![Muokkaus](public/screenshots/edit.png)
+Kommentit: ![Kommentit](public/screenshots/comments.png)
 
 ## Käyttöönotto
 1. Asenna: npm install
