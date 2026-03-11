@@ -1,7 +1,7 @@
 ## Toiminnallisuudet
 Käyttäjänhallinta: Rekisteröinti, sisäänkirjautuminen ja tilin poistaminen.
-Median hallinta: Julkaisujen selaus, omien postausten muokkaus, tykkäysten lisääminen ja poistaminen lisääksi käyttäjä voi luoda uusia julkaisuja, 
-muokata omien julkaisujensa otsikoita ja kuvauksia sekä poistaa niitä.
+Median hallinta: Julkaisujen selaus, tykkäysten lisääminen ja poistaminen (toggle-logiikka) sekä kommenttien lukeminen ja kirjoittaminen. 
+Lisäksi käyttäjä voi luoda uusia julkaisuja, muokata omien julkaisujensa otsikoita ja kuvauksia sekä poistaa niitä.
 
 ## Tekniikat
 Front-end: React, TypeScript, Vite 
