@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { fetchData } from '../utils/fetch-data';
 import { VisualMedia } from '../types/VisualMedia';
 
-// Haetaan rajapintojen osoitteet ympäristömuuttujista opettajan standardin mukaisesti.
+// Haetaan rajapintojen osoitteet ympäristömuuttujista
 const MEDIA_API = import.meta.env.VITE_MEDIA_API || 'https://media2.edu.metropolia.fi/media-api/api/v1';
 const AUTH_API = import.meta.env.VITE_AUTH_API || 'https://media2.edu.metropolia.fi/auth-api/api/v1';
 const UPLOAD_API = import.meta.env.VITE_UPLOAD_API || 'https://media2.edu.metropolia.fi/upload-api/api/v1';
@@ -36,7 +36,7 @@ export const useUser = () => {
       },
       body: JSON.stringify(inputs),
     };
-    return await fetchData<any>(resourceUrl, fetchOptions);
+    return await fetchData<any>(resourceUrl, fetchOptions); 
   };
 
   const getUserByToken = useCallback(async (token: string) => {
@@ -100,8 +100,11 @@ export const useMedia = () => {
 
     const fetchOptions = {
       method: 'POST',
+      // Sisältää tokenin Authorization-headerissä ja lähettää mediaData-objektin JSON-muodossa
       headers: {
+        // Token vaaditaan, jotta API tietää kuka luo julkaisun
         'Authorization': `Bearer ${token}`,
+        // Content-Type on application/json, koska lähetämme mediaData-objektin JSON-muodossa
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(mediaData),
@@ -138,6 +141,7 @@ export const useLike = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        // Sisältää tokenin Authorization-headerissä, jotta API tietää kuka tykkää julkaisusta
         Authorization: 'Bearer ' + token,
       },
       body: JSON.stringify({ media_id }),
@@ -163,6 +167,7 @@ export const useLike = () => {
     const fetchOptions = {
       method: 'GET',
       headers: {
+        // Sisältää tokenin Authorization-headerissä, jotta API tietää kuka käyttäjä hakee tykkäystietoja
         Authorization: 'Bearer ' + token,
       },
     };
@@ -174,25 +179,4 @@ export const useLike = () => {
   };
 
   return { postLike, deleteLike, getCountByMediaId, getUserLike };
-};
-
-// Kommentteihin liittyvät API-kutsut
-export const useComment = () => {
-  const postComment = async (comment_text: string, media_id: number, token: string) => {
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token, 
-      },
-      body: JSON.stringify({ media_id, comment_text }),
-    };
-    return await fetchData<any>(`${MEDIA_API}/comments`, fetchOptions);
-  };
-
-  const getCommentsByMediaId = async (media_id: number) => {
-    return await fetchData<any[]>(`${MEDIA_API}/comments/bymedia/${media_id}`);
-  };
-
-  return { postComment, getCommentsByMediaId };
 };

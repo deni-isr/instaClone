@@ -27,9 +27,10 @@ const Layout = () => {
         </Link>
 
         {/* Ohjataan profiiliin tai kirjautumiseen tilan mukaan */}
-        <Link 
-          to={user ? "/profile" : "/login"} 
-          className="text-gray-400 hover:text-black transition-colors"
+        <Link
+          to={user ? "/profile" : "/login"}
+          className=
+          "text-gray-400 hover:text-black transition-colors"
         >
           <User size={28} strokeWidth={1.5} />
         </Link>

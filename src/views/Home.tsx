@@ -20,10 +20,11 @@ const Home = () => {
       });
       
       if (user) {
-        // Pakotetaan tunnisteet numeroiksi tarkan vertailun takaamiseksi
         const currentUserId = Number(user.user_id);
         
+        // Erotellaan käyttäjän omat julkaisut ja muiden julkaisut, ja näytetään ensin omat
         const myMedia = sortedMedia.filter(item => Number(item.user_id) === currentUserId);
+        // Näytetään muiden julkaisuista vain 5 uusinta, jotta etusivu ei täyty liikaa
         const othersMedia = sortedMedia.filter(item => Number(item.user_id) !== currentUserId).slice(0, 5);
         
         setMediaArray([...myMedia, ...othersMedia]);
@@ -35,6 +36,7 @@ const Home = () => {
     }
   }, [getMedia, user]);
 
+  // 
   useEffect(() => {
     fetchMedia();
   }, [fetchMedia]);

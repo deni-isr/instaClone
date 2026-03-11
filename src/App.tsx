@@ -5,6 +5,7 @@ import Home from './views/Home';
 import Login from './views/Login';
 import Profile from './views/Profile';
 import Upload from './views/Upload';
+import Register from './views/Register';
 import useUserStore from './store/UserStore';
 import { useUser } from './hooks/ApiHooks';
 
@@ -17,12 +18,15 @@ const App = () => {
   // Käytetään useEffectiä istunnon palauttamiseen sovelluksen käynnistyessä
   useEffect(() => {
     const restoreSession = async () => {
+      // Haetaan tallennettu token selaimen localStoragesta
       const savedToken = localStorage.getItem('token');
+      // Jos token löytyy, yritetään validoida se ja hakea käyttäjätiedot
       if (savedToken) {
         try {
           // Validoidaan token ja haetaan käyttäjätiedot
           const userData = await getUserByToken(savedToken);
           
+          // Jos käyttäjätiedot onnistutaan hakemaan, asetetaan ne tilaan ja token uudestaan
           if (userData && userData.user) {
             setUser(userData.user);
             setToken(savedToken);
@@ -59,6 +63,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/register" element={<Register />} />
         </Route>
       </Routes>
     </Router>

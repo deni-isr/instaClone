@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { useApi } from '../hooks/ApiHooks';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../hooks/ApiHooks';
 
 const Register: React.FC = () => {
-  const { postUser } = useApi();
+  const { postRegister } = useUser();
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({ username: '', password: '', email: '' });
 
@@ -14,8 +14,8 @@ const Register: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await postUser(inputs);
-      alert('Käyttäjä luotu!');
+      await postRegister(inputs);
+      alert('Käyttäjä luotu! Kirjaudu sisään.');
       navigate('/login');
     } catch (error) {
       alert((error as Error).message);
@@ -33,6 +33,7 @@ const Register: React.FC = () => {
             placeholder="Käyttäjätunnus"
             onChange={handleInputChange}
             className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+            required
           />
           <input
             type="email"
@@ -40,6 +41,7 @@ const Register: React.FC = () => {
             placeholder="Sähköposti"
             onChange={handleInputChange}
             className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+            required
           />
           <input
             type="password"
@@ -47,6 +49,7 @@ const Register: React.FC = () => {
             placeholder="Salasana"
             onChange={handleInputChange}
             className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-1 focus:ring-blue-400 text-sm"
+            required
           />
           <button
             type="submit"
