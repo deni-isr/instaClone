@@ -42,4 +42,4 @@ Nimi: random  Pass: random123
 
 ## Tekoäly
 Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
-kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta ja sovelluksen ulkoasua
+kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta ja sovelluksen ulkoasusta
