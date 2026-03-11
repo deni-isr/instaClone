@@ -17,10 +17,13 @@ const Login: React.FC = () => {
     event.preventDefault();
     try {
       const loginResult = await postLogin(inputs);
-      // Oletetaan, että rajapinta palauttaa tokenin ja user-objektin
+      
+      // Tallennetaan token selaimeen, jotta F5 ei kirjaa ulos:
+      localStorage.setItem('token', loginResult.token); 
+      
       setToken(loginResult.token);
       setUser(loginResult.user);
-      navigate('/'); // Kirjautumisen jälkeen heitetään etusivulle
+      navigate('/'); 
     } catch (error) {
       alert('Kirjautuminen epäonnistui. Tarkista tunnukset.');
     }

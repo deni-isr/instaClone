@@ -180,3 +180,24 @@ export const useLike = () => {
 
   return { postLike, deleteLike, getCountByMediaId, getUserLike };
 };
+
+// Kommentteihin (Comments) liittyvät API-kutsut
+export const useComment = () => {
+  const postComment = async (media_id: number, comment_text: string, token: string) => {
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      body: JSON.stringify({ media_id, comment_text }),
+    };
+    return fetchData<any>(`${MEDIA_API}/comments`, fetchOptions);
+  };
+
+  const getCommentsByMediaId = async (media_id: number) => {
+    return fetchData<any[]>(`${MEDIA_API}/comments/bymedia/${media_id}`);
+  };
+
+  return { postComment, getCommentsByMediaId };
+};
