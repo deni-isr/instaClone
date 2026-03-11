@@ -145,7 +145,7 @@ const MediaRow = ({ item, onDelete }: MediaRowProps) => {
           <span className="font-bold text-xs uppercase">Käyttäjä {item.user_id}</span>
         </div>
         
-        // 
+        
         {isOwnPost && !isEditing && (
           <div className="flex space-x-2">
             <button onClick={() => setIsEditing(true)} className="text-blue-500 hover:text-blue-700 p-1">
