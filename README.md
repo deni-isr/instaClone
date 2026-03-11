@@ -19,7 +19,9 @@ Muokkaustila:
 
 ![Muokkaus](public/screenshots/edit.png)
 
-Kommentit: ![Kommentit](public/screenshots/comments.png)
+Kommentit:
+
+![Kommentit](public/screenshots/comments.png)
 
 ## Käyttöönotto
 1. Asenna: npm install
