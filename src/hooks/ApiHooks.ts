@@ -24,7 +24,7 @@ export const useAuthentication = () => {
 };
 
 
-// Käyttäjätilien hallintaan ja rekisteröitymiseen liittyvät API-kutsut.
+// Käyttäjätilien hallintaan ja rekisteröitymiseen liittyvät.
 export const useUser = () => {
   const resourceUrl = `${AUTH_API}/users`;
 
