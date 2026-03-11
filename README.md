@@ -41,5 +41,4 @@ https://media2.edu.metropolia.fi/media-api/api/v1
 Nimi: random  Pass: random123
 
 ## Tekoäly
-Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen ja 
-kaksivaiheinen tiedoston latausprosessi, on tekoälyn avustuksella, lisäksi virheiden korjaamisesta ja sovelluksen ulkoasusta
+Logiikan toteutus: kuten rinnakkaiset API-kutsut käyttäjänimien noutamiseen, lisäksi virheiden korjaamisesta ja sovelluksen ulkoasusta
