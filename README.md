@@ -32,6 +32,7 @@ Kommentit:
 **Users:** Käyttäjätiedot ja tunnistautuminen
 **Media:** Tiedostojen nimet, otsikot, kuvaukset ja omistajuussuhteet
 **Likes:** Julkaisujen ja käyttäjien välinen yhteys
+**Comments:** Julkaisujen, käyttäjien ja tekstisisällön välinen yhteys.
 
 ## Back-end-API:
 https://media2.edu.metropolia.fi/media-api/api/v1
